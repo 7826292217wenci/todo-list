@@ -1,0 +1,75 @@
+{ 
+  "name": "PHOTOGRAPHY Application", 
+  "short_name": "PGA", 
+  "description": "A PHOTOGRAPHY Application for the module of Dynamic Web Technologies.", 
+  "icons": [ 
+    { 
+      "src": "iconPGA-1024-Maskable.png", 
+      "sizes": "1024x1024", 
+      "type": "image/png",
+      "purpose":"maskable" 
+    }, 
+    { 
+      "src": "public/iconPGA-512.png", 
+      "sizes": "512x512", 
+      "type": "image/png",
+      "purpose":"any" 
+    }, 
+    { 
+      "src": "public/iconPGA-256.png", 
+      "sizes": "256x256", 
+      "type": "image/png",
+      "purpose":"any" 
+    }, 
+    { 
+      "src": "public/iconPGA-64.png", 
+      "sizes": "64x64", 
+      "type": "image/png",
+      "purpose":"any" 
+    }, 
+    { 
+      "src": "public/iconPGA-32.png", 
+      "sizes": "32x32", 
+      "type": "image/png",
+      "purpose":"any" 
+    }, 
+    { 
+      "src": "public/iconPGA-24.png",
+      "sizes": "24x24", 
+      "type": "image/png",
+      "purpose":"any" 
+    },
+    { 
+      "src": "public/iconPGA-16.png",
+      "sizes": "16x16", 
+      "type": "image/png",
+      "purpose":"any" 
+    }          
+  ],
+
+  "screenshots": [
+    {
+      "src": "public/iconPGA-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "form_factor": "wide"
+    },
+    {
+      "src": "public/iconPGA-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "form_factor": "narrow"
+    }
+  ],
+  
+  
+  "start_url": "./index.html",
+  "scope": "/",
+  "orientation": "portrait",
+  "lang": "en-US",
+  "homepage": ".",
+  "display": "standalone", 
+  "background_color": "#fff",
+  "theme_color": "#000000"
+
+} 
