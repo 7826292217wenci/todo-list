@@ -1,4 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import React from 'react';
+import { useEffect, useRef, useState, useCallback } from "react";
+import Popup from "reactjs-popup";     
+import "reactjs-popup/dist/index.css"; 
+import Webcam from "react-webcam";     
+import { addPhoto, GetPhotoSrc } from "../db.jsx"; 
 
 
 function usePrevious(value) {
@@ -17,18 +22,8 @@ function Todo(props) {
 //Tap can move diffierent button , enter is click
   const editFieldRef = useRef(null);
   const editButtonRef = useRef(null);
-  const wasEditing = usePrevious(isEditing);
 
-  useEffect(() => {
-    if (!wasEditing && isEditing) {
-      editFieldRef.current.focus();
-    } else if (wasEditing && !isEditing) {
-      editButtonRef.current.focus();
-    }
-  }, [wasEditing, isEditing]);
-  
-//
-  //editTask={locateTask}
+  const wasEditing = usePrevious(isEditing);
   
 
   function handleChange(e) {
@@ -37,7 +32,7 @@ function Todo(props) {
 
   function handleSubmit(e) {
     e.preventDefault();
-    props.locateTask(props.id, newName);
+    props.editTask(props.id, newName);
     setNewName("");
     setEditing(false);
   }
@@ -84,8 +79,9 @@ function Todo(props) {
         />
         <label className="todo-label" htmlFor={props.id}>
           {props.name}
-          &nbsp;| la {props.latitude}
-          &nbsp;| lo {props.longitude}           
+          <a href={props.location.mapURL}>(map)</a> 
+          &nbsp; | &nbsp; 
+          <a href={props.location.smsURL}>(sms)</a>                    
         </label>
       </div>
       <div className="btn-group">
@@ -97,17 +93,177 @@ function Todo(props) {
             ref={editButtonRef}>
           Edit <span className="visually-hidden">{props.name}</span>
         </button>
-        <button
+        <Popup                                     
+          trigger={ 
+            <button type="button" className="btn"> 
+              {" "} 
+              Take Photo{" "} 
+            </button> 
+          } 
+          modal 
+        > 
+          <div> 
+            <WebcamCapture id={props.id} photoedTask={props.photoedTask} /> 
+          </div> 
+        </Popup> 
+ 
+        <Popup                                   
+          trigger={ 
+            <button type="button" className="btn"> 
+              {" "} 
+              View Photo{" "} 
+            </button> 
+          } 
+          modal 
+        > 
+          <div> 
+            <ViewPhoto id={props.id} alt={props.name} /> 
+          </div> 
+        </Popup>        
+      </div>
+      <button
           type="button"
           className="btn btn__danger"
           onClick={() => props.deleteTask(props.id)}>
           Delete <span className="visually-hidden">{props.name}</span>
-        </button>
-      </div>
+        </button>      
     </div>
   );
 
+    useEffect(() => {
+    if (!wasEditing && isEditing) {
+      editFieldRef.current.focus();
+    } else if (wasEditing && !isEditing) {
+      editButtonRef.current.focus();
+    }
+  }, [wasEditing, isEditing]);
+  
+
   return <li className="todo">{isEditing ? editingTemplate : viewTemplate}</li>;
 }
+
+
+const WebcamCapture = (props) => {  
+  const webcamRef = useRef(null); 
+  const [imgSrc, setImgSrc] = useState(null); 
+  const [imgId, setImgId] = useState(null); 
+  const [photoSave, setPhotoSave] = useState(false);
+
+  useEffect(() => {  
+    if (photoSave) { 
+      console.log("useEffect detected photoSave"); 
+      props.photoedTask(imgId); 
+      setPhotoSave(false); 
+    } 
+  }); 
+  console.log("WebCamCapture", props.id);
+
+  const capture = useCallback( (id) => { 
+    const imageSrc = webcamRef.current.getScreenshot(); 
+    setImgSrc(imageSrc); 
+    console.log("capture", imageSrc.length, id); 
+  }, 
+  [webcamRef, setImgSrc] 
+  );
+
+  const savePhoto = (id, imgSrc) => { 
+    console.log("savePhoto", imgSrc.length, id); 
+    addPhoto(id, imgSrc);
+    //props.photoedTask(id); 
+    setImgId(id); 
+    setPhotoSave(true); 
+  };
+
+  const cancelPhoto = (id, imgSrc) => { 
+    console.log("cancelPhoto", imgSrc.length, id); 
+  };
+  // const cancelPhoto = (id, imgSrc) => {
+    // if (!imgSrc) {
+      // console.log("imgSrc is empty");
+      // return;
+    // }else{
+      // console.log("cancelPhoto", imgSrc.length, id);
+    // }
+    // 
+    // setReturnToMain(true);
+    // if (returnToMain) {
+      // return <Redirect to="/" />;
+    // }
+  // };
+  return ( 
+    <> 
+      {!imgSrc && ( 
+        <Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" /> 
+      )} 
+      {imgSrc && <img src={imgSrc} />} 
+      <div className="btn-group"> 
+        {!imgSrc && (  
+          <button 
+            type="button" 
+            className="btn" 
+            onClick={() => capture(props.id)}> 
+            Capture photo 
+          </button> 
+        )} 
+        {imgSrc && (   
+          <button 
+            type="button" 
+            className="btn" 
+            onClick={() => savePhoto(props.id, imgSrc)}> 
+            Save Photo 
+          </button> 
+        )} 
+        <button         
+          type="button" 
+          className="btn todo-cancel" 
+          onClick={() => cancelPhoto(props.id, imgSrc)}> 
+          Cancel 
+        </button> 
+      </div> 
+    </>
+  );
+
+};
+
+const ViewPhoto = (props) => {
+  const [photoSrc, setPhotoSrc] = useState(null);
+
+  useEffect(() => {
+    const fetchPhotoSrc = async () => {
+      const src = await GetPhotoSrc(props.id); // 假设这是一个异步操作
+      setPhotoSrc(src);
+    };
+    
+    fetchPhotoSrc();
+  }, [props.id]);
+
+  if (!photoSrc) {
+    // 当photoSrc为null时，直接返回一个按钮，点击后显示警告而不是打开模态框
+    return (
+      <button
+        type="button"
+        className="btn"
+        onClick={() => alert("Photo not found")}
+      >
+        View Photo
+      </button>
+    );
+  }
+  return (
+    <Popup
+      trigger={
+        <button type="button" className="btn">
+          {" "}
+          View Photo{" "}
+        </button>
+      }
+      modal
+    >
+      <div>
+        <img src={photoSrc} alt={props.name} />
+      </div>
+    </Popup>
+  );
+};
 
 export default Todo;

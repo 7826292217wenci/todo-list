@@ -5,7 +5,14 @@ import FilterButton from "./components/FilterButton";
 import Todo from "./components/Todo";
 
 
-function App(props) {
+const FILTER_MAP = {
+  All: () => true,
+  Active: (task) => !task.completed,
+  Completed: (task) => task.completed,
+};
+const FILTER_NAMES = Object.keys(FILTER_MAP);
+
+function App(_props) {
 
     const geoFindMe = () => { 
     if (!navigator.geolocation) { 
@@ -20,7 +27,6 @@ function App(props) {
     const latitude = position.coords.latitude; 
     const longitude = position.coords.longitude; 
     console.log(latitude, longitude); 
- 
     console.log(`Latitude: ${latitude}°, Longitude: ${longitude}°`); 
     console.log(`Try here: https://www.openstreetmap.org/#map=18/${latitude}/${longitude}`); 
     locateTask(lastInsertedId, { 
@@ -33,6 +39,20 @@ function App(props) {
   const error = () => { 
     console.log("Unable to retrieve your location"); 
   };
+
+  
+  function usePersistentState(key, defaultValue) {
+    const [state, setState] = useState(
+      () => JSON.parse(localStorage.getItem(key)) || defaultValue
+    );
+    useEffect(() => {
+      localStorage.setItem(key, JSON.stringify(state));
+    }, [key, state]);
+
+    return [state, setState];
+         
+  }
+
   //add task
   function addTask(name) {
     const id = `todo-${nanoid()}`;
@@ -56,38 +76,53 @@ function App(props) {
     });
     setTasks(updatedTasks);
   } 
-  //delete task
+
   function deleteTask(id) {
     const remainingTasks = tasks.filter((task) => id !== task.id);
     setTasks(remainingTasks);
   }
 
-  //editTask=>locateTask
+function editTask(id, newName) {
+  const editedTasks = tasks.map((task) => {
+    if (task.id === id) {
+      return { ...task, name: newName };
+    }
+    return task;
+  });
+  setTasks(editedTasks);
+}  
+
+
   function locateTask(id, location) { 
     console.log("locate Task", id, " before"); 
     console.log(location, tasks); 
     const locatedTaskList = tasks.map((task) => { 
       // if this task has the same ID as the edited task 
-      if (id === task.id) { 
-        // 
+      if (id === task.id) {  
         return { ...task, location: location }; 
       } 
       return task; 
     }); 
     console.log(locatedTaskList); 
     setTasks(locatedTaskList);
-    editTask={locateTask} 
-  }  
+    //editTask={locateTask} 
+  } 
+  
+  function photoedTask(id) { 
+    console.log("photoedTask", id); 
+    const photoedTaskList = tasks.map((task) => { 
+      if (id === task.id) { 
+        return { ...task, photo: true }; 
+      } 
+      return task; 
+    }); 
+    console.log(photoedTaskList); 
+    setTasks(photoedTaskList);  
+   
+  }
 
-  const FILTER_MAP = {
-    All: () => true,
-    Active: (task) => !task.completed,
-    Completed: (task) => task.completed,
-  };
-
-  const FILTER_NAMES = Object.keys(FILTER_MAP);
-
-  const [tasks, setTasks] = useState(props.tasks);
+  const [tasks, setTasks] = usePersistentState("tasks", []);
+  //const [tasks, setTasks] = useState(props.tasks);
   const [filter, setFilter] = useState("All");
   const [lastInsertedId, setLastInsertedId] = useState("");
 
@@ -99,11 +134,13 @@ function App(props) {
       name={task.name}
       completed={task.completed}
       key={task.id}
-      latitude={task.location.latitude}
-      longitude={task.location.longitude}
+      location={task.location}
+      // latitude={task.location.latitude}
+      // longitude={task.location.longitude}
       toggleTaskCompleted={toggleTaskCompleted}
+      photoedTask={photoedTask}
       deleteTask={deleteTask}
-      //editTask={locateTask}
+      editTask={editTask}
     />
   ));
 
