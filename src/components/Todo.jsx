@@ -181,9 +181,19 @@ const WebcamCapture = (props) => {
     setImgId(id);
     setPhotoSave(true);
   };
-
+  const [returnToMain, setReturnToMain] = useState(false);
   const cancelPhoto = (id, imgSrc) => {
-    console.log("cancelPhoto", imgSrc.length, id);
+    if (!imgSrc) {
+      console.log("imgSrc is empty");
+      return;
+    }else{
+      console.log("cancelPhoto", imgSrc.length, id);
+    }
+    
+    setReturnToMain(true);
+    if (returnToMain) {
+      return <Redirect to="/" />;
+    }
   };
 
   return (
@@ -223,27 +233,17 @@ const WebcamCapture = (props) => {
 const ViewPhoto = (props) => {
   const photoSrc = GetPhotoSrc(props.id);
 
-  if (!photoSrc) {
-    // 如果照片不存在，则弹出提示框
-    alert("没有照片");
-    return null; // 返回 null，表示不渲染任何内容
-  }
+  // if (!photoSrc) {
+    // alert("no picture");
+    // return null; 
+  // }
 
-  // 如果照片存在，则渲染图片和弹出式模态框
   return (
-    <Popup
-      trigger={
-        <button type="button" className="btn">
-          {" "}
-          View Photo{" "}
-        </button>
-      }
-      modal
-    >
+    <>
       <div>
         <img src={photoSrc} alt={props.name} />
       </div>
-    </Popup>
+    </>
   );
 };
 
