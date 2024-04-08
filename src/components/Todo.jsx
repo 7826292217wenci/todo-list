@@ -1,15 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 
+
+function usePrevious(value) {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+}
+
 function Todo(props) {
 
-  function usePrevious(value) {
-    const ref = useRef();
-    useEffect(() => {
-      ref.current = value;
-    });
-    return ref.current;
-  }
-  
 
   const [isEditing, setEditing] = useState(false);
   const [newName, setNewName] = useState("");
@@ -27,6 +28,7 @@ function Todo(props) {
   }, [wasEditing, isEditing]);
   
 //
+  //editTask={locateTask}
   
 
   function handleChange(e) {
@@ -35,7 +37,7 @@ function Todo(props) {
 
   function handleSubmit(e) {
     e.preventDefault();
-    props.editTask(props.id, newName);
+    props.locateTask(props.id, newName);
     setNewName("");
     setEditing(false);
   }
@@ -82,6 +84,8 @@ function Todo(props) {
         />
         <label className="todo-label" htmlFor={props.id}>
           {props.name}
+          &nbsp;| la {props.latitude}
+          &nbsp;| lo {props.longitude}           
         </label>
       </div>
       <div className="btn-group">

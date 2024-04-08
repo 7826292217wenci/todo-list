@@ -1,15 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 
-function Form(props) {
+   function Form(props) {
     const [name, setName] = useState("");
+    const [addition, setAddition] = useState(false);
+
+    useEffect(() => {
+      if (addition) {
+        console.log("useEffect detected addition");
+        props.geoFindMe();
+        setAddition(false);
+      }
+    });
     //bank not allow to submit
     function handleSubmit(event) {
-        event.preventDefault();
-        if (name.trim()) {
-        props.addTask(name.trim());
+        event.preventDefault(); 
+        setAddition(true);
+        props.addTask(name);
         setName("");
-      }
+  {      
+      };
     }
     function handleChange(event) {
         setName(event.target.value);
