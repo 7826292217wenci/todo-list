@@ -12,8 +12,6 @@ db.version(1).stores({
 async function addPhoto(id, imgSrc) {  
   console.log("addPhoto", imgSrc.length, id); 
   try { 
-    // Add the new photo with id used as key for todo array in localStorage 
-    // to avoid having a second pk for one todo item. 
   
     const i = await db.photos.add({ 
       id: id,           
