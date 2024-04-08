@@ -3,7 +3,8 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import Popup from "reactjs-popup";     
 import "reactjs-popup/dist/index.css"; 
 import Webcam from "react-webcam";     
-import { addPhoto, GetPhotoSrc } from "../db.jsx"; 
+import { addPhoto, GetPhotoSrc } from "../db.jsx";
+import './Todo.css';
 
 
 function usePrevious(value) {
@@ -100,7 +101,8 @@ function Todo(props) {
               Take Photo{" "} 
             </button> 
           } 
-          modal 
+          modal
+          className='popup-content' 
         > 
           <div> 
             <WebcamCapture id={props.id} photoedTask={props.photoedTask} /> 
@@ -114,7 +116,8 @@ function Todo(props) {
               View Photo{" "} 
             </button> 
           } 
-          modal 
+          modal
+          className='popup-content' 
         > 
           <div> 
             <ViewPhoto id={props.id} alt={props.name} /> 
@@ -146,50 +149,36 @@ function Todo(props) {
 const WebcamCapture = (props) => {  
   const webcamRef = useRef(null); 
   const [imgSrc, setImgSrc] = useState(null); 
-  const [imgId, setImgId] = useState(null); 
-  const [photoSave, setPhotoSave] = useState(false);
+  // const [imgId, setImgId] = useState(null); 
+  // const [photoSave, setPhotoSave] = useState(false);
 
-  useEffect(() => {  
-    if (photoSave) { 
-      console.log("useEffect detected photoSave"); 
-      props.photoedTask(imgId); 
-      setPhotoSave(false); 
-    } 
-  }); 
-  console.log("WebCamCapture", props.id);
+  // useEffect(() => {  
+    // if (photoSave) { 
+      // console.log("useEffect detected photoSave"); 
+      // props.photoedTask(imgId); 
+      // setPhotoSave(false); 
+    // } 
+  // }); 
+  // console.log("WebCamCapture", props.id);
 
-  const capture = useCallback( (id) => { 
+  const capture = useCallback( () => { 
     const imageSrc = webcamRef.current.getScreenshot(); 
     setImgSrc(imageSrc); 
-    console.log("capture", imageSrc.length, id); 
   }, 
-  [webcamRef, setImgSrc] 
-  );
+  [webcamRef]); 
 
-  const savePhoto = (id, imgSrc) => { 
-    console.log("savePhoto", imgSrc.length, id); 
-    addPhoto(id, imgSrc);
-    //props.photoedTask(id); 
-    setImgId(id); 
-    setPhotoSave(true); 
+  const savePhoto = () => { 
+    if (imgSrc) {
+      console.log("savePhoto", imgSrc);
+      addPhoto(props.id, imgSrc);
+      props.photoedTask(props.id, imgSrc); // 假设photoedTask是更新UI的方法
+      setImgSrc(null); // 清空预览
+    }
+  };    
+  const cancelPhoto = () => {
+    console.log("cancelPhoto");
+    setImgSrc(null);
   };
-
-  const cancelPhoto = (id, imgSrc) => { 
-    console.log("cancelPhoto", imgSrc.length, id); 
-  };
-  // const cancelPhoto = (id, imgSrc) => {
-    // if (!imgSrc) {
-      // console.log("imgSrc is empty");
-      // return;
-    // }else{
-      // console.log("cancelPhoto", imgSrc.length, id);
-    // }
-    // 
-    // setReturnToMain(true);
-    // if (returnToMain) {
-      // return <Redirect to="/" />;
-    // }
-  // };
   return ( 
     <> 
       {!imgSrc && ( 
