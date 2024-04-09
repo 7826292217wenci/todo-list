@@ -231,17 +231,7 @@ const WebcamCapture = (props) => {
 };
 
 const ViewPhoto = (props) => {
-  //const photoSrc = GetPhotoSrc(props.id);
-  const [photoSrc, setPhotoSrc] = useState("");
-
-  useEffect(() => {
-    const fetchPhotoSrc = async () => {
-      const src = await GetPhotoSrc(props.id);
-      setPhotoSrc(src);
-    };
-
-    fetchPhotoSrc();
-  }, [props.id]);
+  const photoSrc = GetPhotoSrc(props.id);
   return (
     <>
       <div>
