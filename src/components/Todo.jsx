@@ -3,7 +3,8 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import Popup from "reactjs-popup";     
 import "reactjs-popup/dist/index.css"; 
 import Webcam from "react-webcam";     
-import { addPhoto, GetPhotoSrc } from "../db.jsx"; 
+import { addPhoto, GetPhotoSrc } from "../db.jsx";
+import { useLiveQuery } from 'dexie-react-hooks'; 
 
 
 function usePrevious(value) {
@@ -230,18 +231,40 @@ const WebcamCapture = (props) => {
   );
 };
 
-const ViewPhoto = (props) => {
-  const photoSrc = GetPhotoSrc(props.id);
+// const ViewPhoto = (props) => {
+  // const photoSrc = GetPhotoSrc(props.id);
+  // return (
+    // <>
+      {/* <div> */}
+        {/* {photoSrc ? ( */}
+        // <img src={photoSrc} alt={props.name} />
+        // ) : (
+          // <>No photo</>
+        // )}
+       {/* </div> */}
+    {/* </> */}
+  // );
+// };
+
+const ViewPhoto = ({ props, id }) => {
+  // 使用useLiveQuery监听数据库变化
+  const img = useLiveQuery(() => db.photos.where({ props, id }).first());
+
+  if (img === undefined) {
+    // 数据正在加载中
+    return <p>Loading...</p>;
+  }
+
+  if (img === null) {
+    // 数据加载完成，但没有找到图片
+    return <p>没有照片</p>;
+  }
+
+  // 数据加载完成，且找到了图片
   return (
-    <>
-      <div>
-        {photoSrc ? (
-        <img src={photoSrc} alt={props.name} />
-        ) : (
-          <>No photo</>
-        )}
-       </div>
-    </>
+    <div>
+      <img src={img.imgSrc} alt="Loaded from DB" />
+    </div>
   );
 };
 
