@@ -230,103 +230,19 @@ const WebcamCapture = (props) => {
   );
 };
 
-// const ViewPhoto = (props) => {
-  // const photoSrc = GetPhotoSrc(props.id);
-  // return (
-    // <>
-      {/* <div> */}
-        {/* <img src={photoSrc} alt={props.name} /> */}
-      {/* </div> */}
-    {/* </> */}
-  // );
-// };
 const ViewPhoto = (props) => {
-  const [photoSrc, setPhotoSrc] = useState(null);
-
-  useEffect(() => {
-    // 假设GetPhotoSrc是一个异步操作
-    const fetchPhotoSrc = async () => {
-      const src = await GetPhotoSrc(props.id); // 获取照片源地址
-      setPhotoSrc(src);
-    };
-    fetchPhotoSrc();
-  }, [props.id]);
-
-  if (!photoSrc) {
-    return <p>no photo</p>;
-  }
+  const photoSrc = GetPhotoSrc(props.id);
   return (
-    <div>
-      <img src={photoSrc} alt={props.name} />
-    </div>
+    <>
+      <div>
+        {photoSrc ? (
+        <img src={photoSrc} alt={props.name} />
+        ) : (
+          <>No photo</>
+        )}
+       </div>
+    </>
   );
 };
-  // const trigger = <button className="btn">View Photo</button>;
-  // if (!photoSrc) {
-    // return (
-      // <Popup trigger={trigger} modal>
-        {/* {close => ( */}
-          // <div>
-            {/* <p>NOT FOUND PHOTO</p> */}
-            {/* <button className="btn" onClick={close}>CLOSE</button> */}
-          {/* </div> */}
-        // )}
-      {/* </Popup> */}
-    // );
-  // }
-  // return (
-    // <Popup trigger={trigger} modal>
-      {/* {close => ( */}
-        // <div>
-          {/* <img src={photoSrc} alt={props.name} /> */}
-          {/* <button className="btn" onClick={close}>CLOSE</button> */}
-        {/* </div> */}
-      // )}
-    {/* </Popup> */}
-  // );
-
 
 export default Todo;
-// const ViewPhoto = (props) => {
-  // const [photoSrc, setPhotoSrc] = useState(null);
-// 
-  // useEffect(() => {
-    // const fetchPhotoSrc = async () => {
-      // const src = await GetPhotoSrc(props.id); // 假设这是一个异步操作
-      // setPhotoSrc(src);
-    // };
-    // 
-    // fetchPhotoSrc();
-  // }, [props.id]);
-// 
-  // if (!photoSrc) {
-    // 当photoSrc为null时，直接返回一个按钮，点击后显示警告而不是打开模态框
-    // return (
-      // <button
-        // type="button"
-        // className="btn"
-        // onClick={() => alert("Photo not found")}
-      // >
-        {/* View Photo */}
-      {/* </button> */}
-    // );
-  // }
-  // return (
-    // <Popup
-      // trigger={
-        // <button type="button" className="btn">
-          {/* {" "} */}
-          {/* View Photo{" "} */}
-        {/* </button> */}
-      // }
-      // modal
-    // >
-      {/* <div> */}
-        {/* <img src={photoSrc} alt={props.name} /> */}
-      {/* </div> */}
-    {/* </Popup> */}
-  // );
-// };
-// 
-// export default Todo;
-// 
