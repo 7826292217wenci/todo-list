@@ -230,20 +230,55 @@ const WebcamCapture = (props) => {
   );
 };
 
+// const ViewPhoto = (props) => {
+  // const photoSrc = GetPhotoSrc(props.id);
+  // return (
+    // <>
+      {/* <div> */}
+        {/* <img src={photoSrc} alt={props.name} /> */}
+      {/* </div> */}
+    {/* </> */}
+  // );
+// };
 const ViewPhoto = (props) => {
-  const photoSrc = GetPhotoSrc(props.id);
+  const [photoSrc, setPhotoSrc] = useState(null);
 
-  // if (!photoSrc) {
-    // alert("no picture");
-    // return null; 
-  // }
+  useEffect(() => {
+    // 假设GetPhotoSrc是一个异步操作
+    const fetchPhotoSrc = async () => {
+      const src = await GetPhotoSrc(props.id); // 获取照片源地址
+      setPhotoSrc(src);
+    };
+    fetchPhotoSrc();
+  }, [props.id]);
 
+  // 触发器组件，可以是任何能被点击的元素
+  const trigger = <button className="btn">View Photo</button>;
+
+  // 如果没有照片源，点击时显示提示信息
+  if (!photoSrc) {
+    return (
+      <Popup trigger={trigger} modal>
+        {close => (
+          <div>
+            <p>NOT FOUND PHOTO</p>
+            <button className="btn" onClick={close}>CLOSE</button>
+          </div>
+        )}
+      </Popup>
+    );
+  }
+
+  // 如果有照片源，则正常显示照片
   return (
-    <>
-      <div>
-        <img src={photoSrc} alt={props.name} />
-      </div>
-    </>
+    <Popup trigger={trigger} modal>
+      {close => (
+        <div>
+          <img src={photoSrc} alt={props.name} />
+          <button className="btn" onClick={close}>CLOSE</button>
+        </div>
+      )}
+    </Popup>
   );
 };
 
