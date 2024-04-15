@@ -106,7 +106,6 @@ function editTask(id, newName) {
     }); 
     console.log(locatedTaskList); 
     setTasks(locatedTaskList);
-    //editTask={locateTask} 
   } 
   
   function photoedTask(id) { 
